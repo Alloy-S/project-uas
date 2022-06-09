@@ -20,7 +20,7 @@ public class Player extends Rectangle {
        texture = new Texture(Gdx.files.internal("kaktus.png"));
        sprite = new Sprite(texture);
        vec = new Vector2();
-
+       position = new Vector2(800 / 2 - 64 / 2, 20);
 
        width = 64;
        height = 64;
@@ -36,21 +36,22 @@ public class Player extends Rectangle {
         position.y += vec.y * 15f;
     }
 
-    public void draw(SpriteBatch batch){
+    public void draw(SpriteBatch batch) {
         batch.begin();
         sprite.setPosition(position.x - sprite.getWidth()/2, position.y - sprite.getHeight()/2);
 
         float xInput = Gdx.input.getX();
         float yInput = (Gdx.graphics.getHeight() - Gdx.input.getY());
 
-        float angle = MathUtils.radiansToDegrees * MathUtils.atan2(yInput - position.y, xInput - position.x);
+        float angle = (MathUtils.radiansToDegrees * MathUtils.atan2(yInput - position.y, xInput - position.x));
 
         if(angle < 0){
             angle += 360;
         }
-        sprite.rotate(angle);
-
+        sprite.setRotation(angle);
         sprite.draw(batch);
         batch.end();
     }
+
+
 }
