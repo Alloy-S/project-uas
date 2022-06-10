@@ -42,7 +42,7 @@ public class GameScreen implements Screen {
     int dropsGathered;
     float shootTime;
     //attack speed
-    final float shootWaitTime = 0.1f;
+    final float shootWaitTime = 0.5f;
     Player player;
     Table maintable;
     ImageButton setting;
@@ -268,6 +268,7 @@ public class GameScreen implements Screen {
 
             if (((Enemy)enemy).isDead()) {
                 iterEn.remove();
+                dropsGathered++;
             }
             Iterator<Bullet> iterBull = bullets.iterator();
             while (iterBull.hasNext()) {
@@ -277,11 +278,6 @@ public class GameScreen implements Screen {
                 if (bullet.overlaps(enemy)) {
                     ((Enemy)enemy).takeDamage(50);
                     iterBull.remove();
-                }
-
-                //cek apakah enemy sudah mati
-                if (((Enemy)enemy).isDead()) {
-                    dropsGathered++;
                 }
 
             }

@@ -11,11 +11,12 @@ import javax.xml.stream.events.StartDocument;
 import java.nio.file.attribute.UserPrincipal;
 
 public class Bullet extends Rectangle {
-    public static int speed = 500;
+    public static Float attackSpeed = 1f;
     private static Texture texture;
     Vector2 vec;
     Vector2 position;
     Sprite sprite;
+    private final float SET_MOUSE_LIMIT = 150;
 
     public boolean remove = false;
     public Bullet (float x, float y, float targetx, float targety) {
@@ -30,22 +31,32 @@ public class Bullet extends Rectangle {
         height = 30;
         position = new Vector2(x, y);
         vec = new Vector2(0, 0);
+        if (targetx > position.x + SET_MOUSE_LIMIT) {
+            targetx = position.x + SET_MOUSE_LIMIT;
+        } else if (targetx < position.x - SET_MOUSE_LIMIT) {
+            targetx = position.x - SET_MOUSE_LIMIT;
+        }
+
+        if (targety > position.y + SET_MOUSE_LIMIT) {
+            targety = position.y + SET_MOUSE_LIMIT;
+        } else if (targety < position.y - SET_MOUSE_LIMIT) {
+            targety = position.y - SET_MOUSE_LIMIT;
+        }
+
         vec.set(targetx - position.x, (targety - position.y));
     }
 
     public void update(float deltaTime) {
-        y += speed * deltaTime;
+//        y += speed * deltaTime;
         x = position.x;
         y = position.y;
-        if (position.x > 600) {
-            remove = true;
-            System.out.println("kena lo y");
-        }
-        if (position.y > 800) {
-            System.out.println("kena  lo x");
+        if (position.x > 800) {
             remove = true;
         }
-        position.add(vec.x * deltaTime, vec.y * deltaTime);
+        if (position.y > 600) {
+            remove = true;
+        }
+        position.add(vec.x * deltaTime * attackSpeed, vec.y * deltaTime * attackSpeed);
     }
 
     public void render (SpriteBatch bacth) {
