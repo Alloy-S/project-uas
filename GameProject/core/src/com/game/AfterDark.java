@@ -1,13 +1,10 @@
-package com.mygdx.game;
+package com.game;
 
-
-import com.badlogic.gdx.Game;
-
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-
-public class CobaGame extends Game {
+public class AfterDark extends Game {
 	public SpriteBatch batch;
 	public BitmapFont font;
 
@@ -15,7 +12,7 @@ public class CobaGame extends Game {
 	public void create() {
 		batch = new SpriteBatch();
 		font = new BitmapFont(); // use libGDX's default Arial font
-		this.setScreen(new GameScreen(this));
+		this.setScreen(new Menu(this));
 	}
 
 	@Override
@@ -28,4 +25,5 @@ public class CobaGame extends Game {
 		batch.dispose();
 		font.dispose();
 	}
+
 }

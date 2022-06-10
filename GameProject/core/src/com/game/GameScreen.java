@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -6,19 +6,30 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class GameScreen implements Screen {
-    final CobaGame game;
-
+    final AfterDark game;
+    private State state = State.RUN;
     Texture coneImage;
     Texture dropImage;
     Texture bucketImage;
@@ -33,11 +44,19 @@ public class GameScreen implements Screen {
     //attack speed
     final float shootWaitTime = 0.1f;
     Player player;
+    Table maintable;
+    ImageButton setting;
+    TextureAtlas atlas;
+    protected Skin skin;
+    private Stage stage;
+    Viewport viewport;
+    Texture settingImage;
+    private SmallScreen smallScreen;
 
 
 
 
-    public GameScreen(final CobaGame game) {
+    public GameScreen(final AfterDark game) {
         this.game = game;
 
         // load the images for the droplet and the bucket, 64x64 pixels each
@@ -67,6 +86,21 @@ public class GameScreen implements Screen {
         enemies = new Array<Enemy>();
         spawnEnemy();
 
+        atlas = new TextureAtlas("uiskin.atlas");
+        skin = new Skin(Gdx.files.internal("uiskin.json"),atlas);
+        settingImage = new Texture(Gdx.files.internal("setting.png"));
+        viewport = new ExtendViewport(800,600);
+        stage = new Stage(viewport);
+        maintable = new Table();
+        maintable.setFillParent(true);
+        setting = new ImageButton(skin);
+        setting.getStyle().imageUp  = new TextureRegionDrawable(new TextureRegion(settingImage));
+        setting.getStyle().imageDown  = new TextureRegionDrawable(new TextureRegion(settingImage));
+        maintable.add(setting).width(16).height(16).padBottom(20);
+        stage.addActor(maintable);
+        maintable.setPosition(392,284);
+        smallScreen = new SmallScreen(game);
+        smallScreen.show();
     }
 
 
@@ -111,6 +145,24 @@ public class GameScreen implements Screen {
         // begin a new batch and draw the bucket and
         // all drops
         game.batch.begin();
+        stage.act();
+        stage.draw();
+        Gdx.input.setInputProcessor(stage);
+        switch(state){
+            case PAUSE:
+                smallScreen.render(60);
+
+                break;
+            case RUN:
+                setting.addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        pause();
+                    }
+                });
+
+                break;
+        }
         game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 300, 480);
         //game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
 
@@ -125,6 +177,10 @@ public class GameScreen implements Screen {
         }
         game.batch.end();
 
+        if(smallScreen.getState() == 1){
+            smallScreen.setState(0);
+            resume();
+        }
         //shoting code
         shootTime += delta;
         if ((Gdx.input.isTouched()) && shootTime >= shootWaitTime) {
@@ -212,7 +268,6 @@ public class GameScreen implements Screen {
 
             if (((Enemy)enemy).isDead()) {
                 iterEn.remove();
-                dropsGathered++;
             }
             Iterator<Bullet> iterBull = bullets.iterator();
             while (iterBull.hasNext()) {
@@ -225,9 +280,9 @@ public class GameScreen implements Screen {
                 }
 
                 //cek apakah enemy sudah mati
-//                if (((Enemy)enemy).isDead()) {
-//                    dropsGathered++;
-//                }
+                if (((Enemy)enemy).isDead()) {
+                    dropsGathered++;
+                }
 
             }
 
@@ -253,17 +308,18 @@ public class GameScreen implements Screen {
     public void hide() {
     }
 
-    @Override
-    public void pause() {
-    }
-
-    @Override
-    public void resume() {
-    }
 
     @Override
     public void dispose() {
         dropImage.dispose();
         bucketImage.dispose();
+    }public void pause(){
+        this.state = State.PAUSE;
+    }
+    public void resume(){
+        this.state = State.RUN;
+    }
+    public enum State{
+        PAUSE,RUN
     }
 }
