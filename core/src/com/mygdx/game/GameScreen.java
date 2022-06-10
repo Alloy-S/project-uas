@@ -212,6 +212,7 @@ public class GameScreen implements Screen {
 
             if (((Enemy)enemy).isDead()) {
                 iterEn.remove();
+                dropsGathered++;
             }
             Iterator<Bullet> iterBull = bullets.iterator();
             while (iterBull.hasNext()) {
@@ -224,9 +225,9 @@ public class GameScreen implements Screen {
                 }
 
                 //cek apakah enemy sudah mati
-                if (((Enemy)enemy).isDead()) {
-                    dropsGathered++;
-                }
+//                if (((Enemy)enemy).isDead()) {
+//                    dropsGathered++;
+//                }
 
             }
 
