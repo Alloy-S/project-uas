@@ -30,13 +30,11 @@ import java.util.Iterator;
 public class GameScreen implements Screen {
     final AfterDark game;
     private State state = State.RUN;
-    Texture coneImage;
     Texture dropImage;
     Texture bucketImage;
     OrthographicCamera camera;
     Rectangle bucket;
     ArrayList<Bullet> bullets;
-    Array<Rectangle> coneDrops;
     Array<Enemy> enemies;
     long lastDropTime;
     int dropsGathered;
@@ -60,10 +58,8 @@ public class GameScreen implements Screen {
         this.game = game;
 
         // load the images for the droplet and the bucket, 64x64 pixels each
-        dropImage = new Texture(Gdx.files.internal("droplet.png"));
         bucketImage = new Texture(Gdx.files.internal("kaktus.png"));
-        coneImage = new Texture(Gdx.files.internal("droplet.png"));
-        player = new Player();
+        player = new Player(400-64, 20);
 
 
         // load the drop sound effect and the rain background "music"
@@ -84,6 +80,7 @@ public class GameScreen implements Screen {
         bullets = new ArrayList<Bullet>();
         //coneDrops = new Array<Rectangle>();
         enemies = new Array<Enemy>();
+        player.addBullet(400, 600);
         spawnEnemy();
 
         atlas = new TextureAtlas("uiskin.atlas");
@@ -106,20 +103,10 @@ public class GameScreen implements Screen {
 
 
     private void spawnEnemy() {
-        Enemy enemy = new Enemy();
+        Enemy enemy = new Enemy(player);
         enemy.x = MathUtils.random(100, 800 - 100);
         enemy.y = MathUtils.random(100, 480 - 100);
         enemies.add(enemy);
-        lastDropTime = TimeUtils.millis();
-    }
-
-    private void spawnObject() {
-        Rectangle coneImage = new Rectangle();
-        coneImage.x = MathUtils.random(0, 800 - 64);
-        coneImage.y = MathUtils.random(0, 480 - 64);
-        coneImage.width = 64;
-        coneImage.height = 64;
-        coneDrops.add(coneImage);
         lastDropTime = TimeUtils.millis();
     }
 
@@ -139,6 +126,7 @@ public class GameScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
 
         //player.update(delta);
+        player.update(delta);
         player.draw(game.batch);
 
 
@@ -164,17 +152,57 @@ public class GameScreen implements Screen {
                 break;
         }
         game.font.draw(game.batch, "Drops Collected: " + dropsGathered, 300, 480);
-        //game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
+        game.batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
 
 //        for (Rectangle coneDrop : coneDrops) {
 //            game.batch.draw(coneImage, coneDrop.x, coneDrop.y);
 //        }
         for (Enemy enemy : enemies) {
             enemy.render(game.batch);
+
+            for (Bullet bullet: player.bullets) {
+                bullet.render(game.batch);
+                bullet.update(Gdx.graphics.getDeltaTime());
+
+                if (bullet.overlaps(enemy)) {
+                    enemy.takeDamage(player.damage);
+                }
+
+                if (enemy.isDead()) {
+                    dropsGathered++;
+                }
+
+                    if(bullet.position.x<0 || bullet.position.x > 800-16 || bullet.position.y > 600-16
+                            || bullet.position.y<0){
+                        player.removeBullet(bullet);
+                    }
+            }
+            if (enemy.bullets.isEmpty()){
+                if (TimeUtils.nanoTime() - enemy.getLastBulletSpawn() > 1000000000) enemy.addBullet();
+            }else {
+                for (Bullet bullet : enemy.bullets) {
+                    bullet.render(game.batch);
+//                    batch.draw(bullet.getTexture(), bullet.position.x, bullet.position.y);
+                    bullet.update(Gdx.graphics.getDeltaTime());
+                    if (TimeUtils.nanoTime() - enemy.getLastBulletSpawn() > 1000000000) enemy.addBullet();
+
+                    if (bullet.overlaps(player)) {
+                        player.takeDamage(bullet.getDamage());
+                        enemy.removeBullet(bullet);
+                    }
+
+                    if(bullet.position.x<0 || bullet.position.x > 800-16 || bullet.position.y > 600-16
+                            || bullet.position.y<0){
+                        enemy.removeBullet(bullet);
+                    }
+                }
+            }
         }
-        for (Bullet bullet: bullets) {
-            bullet.render(game.batch);
-        }
+//        for (Bullet bullet: bullets) {
+//            bullet.render(game.batch);
+//        }
+
+
         game.batch.end();
 
         if(smallScreen.getState() == 1){
@@ -184,109 +212,112 @@ public class GameScreen implements Screen {
         //shoting code
         shootTime += delta;
         if ((Gdx.input.isTouched()) && shootTime >= shootWaitTime) {
-            bullets.add(new Bullet(player.position.x - 64, player.position.y + 20, Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY()));
+            player.addBullet(Gdx.input.getX(), Gdx.graphics.getHeight()- Gdx.input.getY());
+            //bullets.add(new Bullet(player.x - 64, player.y + 20, Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY()));
             shootTime = 0;
         }
 
-        ArrayList<Bullet> bulletsToRemove = new ArrayList<Bullet>();
-        //update bullet
-        for (Bullet bullet: bullets) {
-            bullet.update(delta);
-            if (bullet.remove) {
-                bulletsToRemove.add(bullet);
-            }
-        }
-        bullets.removeAll(bulletsToRemove);
-
-        //cek enemy
-        for (Enemy enemy : enemies) {
-            enemy.isDead();
-        }
 
 
-
-//         process user input
-//        if (Gdx.input.isTouched()) {
-//
-//        }
-
-        if (Gdx.input.isKeyPressed(Input.Keys.A))
-            player.position.x -= 500 * Gdx.graphics.getDeltaTime();
-            //bucket.x -= 500 * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.D))
-            player.position.x += 500 * Gdx.graphics.getDeltaTime();
-            //bucket.x += 500 * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.W))
-            player.position.y += 500 * Gdx.graphics.getDeltaTime();
-            //bucket.y += 500 * Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.S))
-            player.position.y -= 500 * Gdx.graphics.getDeltaTime();
-//            bucket.y -= 500 * Gdx.graphics.getDeltaTime();
-
-        // make sure the bucket stays within the screen bounds
-        if (bucket.x < 0)
-            bucket.x = 0;
-        if (bucket.x > 800)
-            bucket.x = 800;
-
-        // check if we need to create a new raindrop
-        if (TimeUtils.millis() - lastDropTime > 5000) {
-//            spawnObject();
-            spawnEnemy();
-        }
-
-
-        // move the raindrops, remove any that are beneath the bottom edge of
-        // the screen or that hit the bucket. In the later case we increase the
-        // value our drops counter and add a sound effect.
-//        Iterator<Rectangle> iter = coneDrops.iterator();
-        Iterator<Enemy> iterEn = enemies.iterator();
-//        while (iter.hasNext()) {
-//            Rectangle coneDrop = iter.next();
-//            //raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
-//            //System.out.println(TimeUtils.millis() - lastDropTime);
-//            if (TimeUtils.millis() - lastDropTime >= 1000) {
-//                iter.remove();
+//        ArrayList<Bullet> bulletsToRemove = new ArrayList<Bullet>();
+//        //update bullet
+//        for (Bullet bullet: bullets) {
+//            bullet.update(delta);
+//            if (bullet.remove) {
+//                bulletsToRemove.add(bullet);
 //            }
+//        }
+//        bullets.removeAll(bulletsToRemove);
 //
-//            if (coneDrop.overlaps(bucket)) {
+//        //cek enemy
+//        for (Enemy enemy : enemies) {
+//            enemy.isDead();
+//        }
+//
+//
+//
+////         process user input
+////        if (Gdx.input.isTouched()) {
+////
+////        }
+//
+////        if (Gdx.input.isKeyPressed(Input.Keys.A))
+////            player.position.x -= 500 * Gdx.graphics.getDeltaTime();
+////
+////        if (Gdx.input.isKeyPressed(Input.Keys.D))
+////            player.position.x += 500 * Gdx.graphics.getDeltaTime();
+////
+////        if (Gdx.input.isKeyPressed(Input.Keys.W))
+////            player.position.y += 500 * Gdx.graphics.getDeltaTime();
+////
+////        if (Gdx.input.isKeyPressed(Input.Keys.S))
+////            player.position.y -= 500 * Gdx.graphics.getDeltaTime();
+//
+//
+//        // make sure the bucket stays within the screen bounds
+//        if (bucket.x < 0)
+//            bucket.x = 0;
+//        if (bucket.x > 800)
+//            bucket.x = 800;
+//
+//        // check if we need to create a new raindrop
+//        if (TimeUtils.millis() - lastDropTime > 5000) {
+////            spawnObject();
+//            spawnEnemy();
+//        }
+//
+//
+//        // move the raindrops, remove any that are beneath the bottom edge of
+//        // the screen or that hit the bucket. In the later case we increase the
+//        // value our drops counter and add a sound effect.
+////        Iterator<Rectangle> iter = coneDrops.iterator();
+//        Iterator<Enemy> iterEn = enemies.iterator();
+////        while (iter.hasNext()) {
+////            Rectangle coneDrop = iter.next();
+////            //raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
+////            //System.out.println(TimeUtils.millis() - lastDropTime);
+////            if (TimeUtils.millis() - lastDropTime >= 1000) {
+////                iter.remove();
+////            }
+////
+////            if (coneDrop.overlaps(bucket)) {
+////                dropsGathered++;
+////                iter.remove();
+////            }
+////        }
+//
+//		while (iterEn.hasNext()) {
+//			Rectangle enemy = iterEn.next();
+//			//raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
+//			//System.out.println(TimeUtils.millis() - lastDropTime);
+//            game.batch.begin();
+//            game.font.draw(game.batch, "HP = " + ((Enemy)enemy).getHp(), ((Enemy)enemy).x + 115, ((Enemy)enemy).y + 130);
+//            game.batch.end();
+//			if (TimeUtils.millis() - lastDropTime >= 4900) {
+//				iterEn.remove();
+//			}
+//
+//            if (((Enemy)enemy).isDead()) {
+//                iterEn.remove();
 //                dropsGathered++;
-//                iter.remove();
 //            }
-//        }
-
-		while (iterEn.hasNext()) {
-			Rectangle enemy = iterEn.next();
-			//raindrop.y -= 200 * Gdx.graphics.getDeltaTime();
-			//System.out.println(TimeUtils.millis() - lastDropTime);
-            game.batch.begin();
-            game.font.draw(game.batch, "HP = " + ((Enemy)enemy).getHp(), ((Enemy)enemy).x + 115, ((Enemy)enemy).y + 130);
-            game.batch.end();
-			if (TimeUtils.millis() - lastDropTime >= 4900) {
-				iterEn.remove();
-			}
-
-            if (((Enemy)enemy).isDead()) {
-                iterEn.remove();
-                dropsGathered++;
-            }
-            Iterator<Bullet> iterBull = bullets.iterator();
-            while (iterBull.hasNext()) {
-                Bullet bullet = iterBull.next();
-
-                //enemy terkena bullet maka take damage
-                if (bullet.overlaps(enemy)) {
-                    ((Enemy)enemy).takeDamage(50);
-                    iterBull.remove();
-                }
-
-            }
+//            Iterator<Bullet> iterBull = bullets.iterator();
+//            while (iterBull.hasNext()) {
+//                Bullet bullet = iterBull.next();
+//
+//                //enemy terkena bullet maka take damage
+//                if (bullet.overlaps(enemy)) {
+//                    ((Enemy)enemy).takeDamage(50);
+//                    iterBull.remove();
+//                }
+//
+//            }
 
 //			if (enemeis.overlaps(bu)) {
 //				dropsGathered++;
 //				iter.remove();
 //			}
-		}
+//		}
     }
 
     @Override
@@ -309,7 +340,8 @@ public class GameScreen implements Screen {
     public void dispose() {
         dropImage.dispose();
         bucketImage.dispose();
-    }public void pause(){
+    }
+    public void pause(){
         this.state = State.PAUSE;
     }
     public void resume(){

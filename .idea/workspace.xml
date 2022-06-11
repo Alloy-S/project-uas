@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d8cdedc3-3a54-4731-8a56-0fdbe2af16f5" name="Changes" comment="" />
+    <list default="true" id="d8cdedc3-3a54-4731-8a56-0fdbe2af16f5" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameProject/core/src/com/game/Bullet.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameProject/core/src/com/game/Bullet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameProject/core/src/com/game/Enemy.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameProject/core/src/com/game/Enemy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameProject/core/src/com/game/GameScreen.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameProject/core/src/com/game/GameScreen.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
