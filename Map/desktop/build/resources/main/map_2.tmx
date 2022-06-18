@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.8" tiledversion="1.8.6" orientation="orthogonal" renderorder="right-down" width="38" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="17">
- <tileset firstgid="1" source="C:/Users/ASUS/tile.tsx"/>
- <tileset firstgid="721" source="C:/Users/ASUS/Downloads/[Base]BaseChip_pipo.tsx"/>
+ <tileset firstgid="1" source="tile.tsx"/>
+ <tileset firstgid="721" source="tile_obj.tsx"/>
  <layer id="1" name="Tile Layer 1" width="38" height="50">
   <data encoding="csv">
 2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,2041,2042,
@@ -110,7 +110,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="2" name="obj" width="38" height="50">
+ <layer id="2" name="obj layer" width="38" height="50">
   <data encoding="csv">
 1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,962,963,964,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,
 1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,965,0,966,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,1033,
