@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.8" tiledversion="1.8.6" orientation="orthogonal" renderorder="right-down" width="38" height="50" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="19">
- <tileset firstgid="1" source="C:/Users/ASUS/Downloads/[Base]BaseChip_pipo.tsx"/>
+ <tileset firstgid="1" source="tile_obj.tsx"/>
  <layer id="1" name="Tile Layer 1" width="38" height="50">
   <data encoding="csv">
 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
