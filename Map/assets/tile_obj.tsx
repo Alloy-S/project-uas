@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.8" tiledversion="1.8.6" name="[Base]BaseChip_pipo" tilewidth="16" tileheight="16" tilecount="1992" columns="8">
- <image source="C:/Users/ASUS/Downloads/Compressed/Pipoya RPG Tileset 16x16/Pipoya RPG Tileset 16x16/[Base]BaseChip_pipo.png" width="128" height="3984"/>
+<tileset version="1.8" tiledversion="1.8.6" name="tile_obj" tilewidth="16" tileheight="16" tilecount="1992" columns="8">
+ <image source="tile_2.png" width="128" height="3984"/>
  <tile id="0">
   <properties>
    <property name="bushes" value=""/>
